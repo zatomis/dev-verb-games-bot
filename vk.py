@@ -2,7 +2,7 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 from environs import Env
 import random
 import vk_api as vk
-
+from vk_api.exceptions import ApiError
 
 env: Env = Env()
 env.read_env()
@@ -21,13 +21,17 @@ def detect_intent_texts(project_id, session_id, texts, language_code):
     response = session_client.detect_intent(
         request={"session": session, "query_input": query_input}
     )
-    return str(response.query_result.fulfillment_text)
+    if not response.query_result.intent.is_fallback:
+        return str(response.query_result.fulfillment_text)
 
 
 def echo(event, vk_api):
-    vk_api.messages.send(user_id=event.user_id,
-        message=detect_intent_texts(project_id, session_id, event.text, language_code), random_id=random.randint(10,100))
-
+    try:
+        vk_api.messages.send(user_id=event.user_id,
+        message=detect_intent_texts(project_id, session_id, event.text, language_code),
+                             random_id=random.randint(10, 100))
+    except ApiError:
+        pass
 
 if __name__ == "__main__":
     vk_session = vk.VkApi(token=vk_key_token)
