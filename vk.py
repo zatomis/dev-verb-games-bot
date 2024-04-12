@@ -2,7 +2,10 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 from environs import Env
 import random
 import vk_api as vk
+import google_dialogflow as gd
 from vk_api.exceptions import ApiError
+from contextlib import suppress
+
 
 env: Env = Env()
 env.read_env()
@@ -12,26 +15,13 @@ session_id = env('SESSION_ID')
 language_code = env('LANGUAGE_CODE')
 
 
-def detect_intent_texts(project_id, session_id, texts, language_code):
-    from google.cloud import dialogflow
-    session_client = dialogflow.SessionsClient()
-    session = session_client.session_path(project_id, session_id)
-    text_input = dialogflow.TextInput(text=texts, language_code=language_code)
-    query_input = dialogflow.QueryInput(text=text_input)
-    response = session_client.detect_intent(
-        request={"session": session, "query_input": query_input}
-    )
-    if not response.query_result.intent.is_fallback:
-        return str(response.query_result.fulfillment_text)
-
-
-def echo(event, vk_api):
-    try:
+def get_dialogflow(event, vk_api):
+    with suppress(ApiError):
         vk_api.messages.send(user_id=event.user_id,
-        message=detect_intent_texts(project_id, session_id, event.text, language_code),
+        message=gd.detect_intent_texts(project_id, session_id, event.text, language_code),
                              random_id=random.randint(10, 100))
-    except ApiError:
-        pass
+
+
 
 if __name__ == "__main__":
     vk_session = vk.VkApi(token=vk_key_token)
@@ -39,4 +29,4 @@ if __name__ == "__main__":
     longpoll = VkLongPoll(vk_session)
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-            echo(event, vk_api)
+            get_dialogflow(event, vk_api)
