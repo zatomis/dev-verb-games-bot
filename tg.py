@@ -5,14 +5,6 @@ from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
 
-env: Env = Env()
-env.read_env()
-token_bot = env('VERBBOT_TOKEN')
-project_id = env('PROJECT_ID')
-session_id = env('SESSION_ID')
-language_code = env('LANGUAGE_CODE')
-
-
 def start(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
     user = update.effective_user
@@ -41,4 +33,10 @@ if __name__ == '__main__':
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
     )
     logger = logging.getLogger(__name__)
+    env: Env = Env()
+    env.read_env()
+    token_bot = env('VERBBOT_TOKEN')
+    project_id = env('PROJECT_ID')
+    session_id = env('SESSION_ID')
+    language_code = env('LANGUAGE_CODE')
     main()

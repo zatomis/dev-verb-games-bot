@@ -7,14 +7,6 @@ from vk_api.exceptions import ApiError
 from contextlib import suppress
 
 
-env: Env = Env()
-env.read_env()
-vk_key_token = env('VK_KEY')
-project_id = env('PROJECT_ID')
-session_id = env('SESSION_ID')
-language_code = env('LANGUAGE_CODE')
-
-
 def get_dialogflow(event, vk_api):
     with suppress(ApiError):
         vk_api.messages.send(user_id=event.user_id,
@@ -24,6 +16,12 @@ def get_dialogflow(event, vk_api):
 
 
 if __name__ == "__main__":
+    env: Env = Env()
+    env.read_env()
+    vk_key_token = env('VK_KEY')
+    project_id = env('PROJECT_ID')
+    session_id = env('SESSION_ID')
+    language_code = env('LANGUAGE_CODE')
     vk_session = vk.VkApi(token=vk_key_token)
     vk_api = vk_session.get_api()
     longpoll = VkLongPoll(vk_session)
