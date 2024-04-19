@@ -30,9 +30,11 @@ pip install -r requirements.txt
 Создайте группу в [vk](vk.com), получите [API для сообщений сообществ](https://dev.vk.com/ru/api/community-messages/getting-started?ref=old_portal), установите права доступа для сообщений 
 сообщества. Включите сообщения сообщества в настройках группы.
 
-### Подготовка telegram
+### Запуск telegram Бота
 
-Создайте бота [botfather](https://t.me/BotFather). 
+Создайте 2 ботов в [botfather](https://t.me/BotFather).
+1-ый - отвечает на вопросы
+2-ой - мониторинг состояния бота в vk и 1-ого бота.
 
 ### Подготовка Dialogflow
 
@@ -51,7 +53,9 @@ pip install -r requirements.txt
  - SESSION_ID = любое 8-и значное целое число
  - LANGUAGE_CODE='RU'
  - VK_KEY = Ваш vk API ключ(для бота, который отвечает на вопросы)
- 
+ - TELEGRAM_LOGS_TOKEN - ваш телеграм бот API ключ(бот, который отправляет уведомления в личку/канал/чат, при наличии, каких-либо ошибок, а также уведомление о старте бота).
+ - TELEGRAM_CHAT_ID - telegram id для уведомлений о состоянии
+
 ### Обучение DialogFlow
 
 Для добвления новых фраз и связок слов создайте `json` файл, на примере вложенного файла `questions.json`.  
