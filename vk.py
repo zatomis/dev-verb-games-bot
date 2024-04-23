@@ -24,7 +24,6 @@ if __name__ == "__main__":
     env.read_env()
     vk_key_token = env('VK_KEY')
     project_id = env('PROJECT_ID')
-    session_id = env('SESSION_ID_VK')
     language_code = env('LANGUAGE_CODE')
     vk_session = vk.VkApi(token=vk_key_token)
     vk_api = vk_session.get_api()
@@ -44,7 +43,7 @@ if __name__ == "__main__":
             longpoll = VkLongPoll(vk_session)
             for event in longpoll.listen():
                 if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-                    get_dialogflow(event, vk_api, project_id, session_id, language_code)
+                    get_dialogflow(event, vk_api, project_id, f'vk{event.user_id}', language_code)
         except Exception as e:
             handle_error(e)
             continue

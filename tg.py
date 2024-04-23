@@ -1,4 +1,6 @@
 import logging
+from contextlib import suppress
+
 import telegram
 import google_dialogflow as gd
 from environs import Env
@@ -20,9 +22,10 @@ def start(update: Update, context: CallbackContext) -> None:
 
 
 
-def get_dialogflow(update: Update, context: CallbackContext, pid, sid, lcode) -> None:
+def get_dialogflow(update: Update, context: CallbackContext, pid, lcode) -> None:
     try:
-        update.message.reply_text(gd.detect_intent_texts(pid, sid, update.message.text, lcode))
+        with suppress(telegram.error.BadRequest):
+            update.message.reply_text(gd.detect_intent_texts(pid, f'tg{update.message.from_user.id}', update.message.text, lcode))
     except Exception as e:
         handle_error(e)
 
@@ -35,13 +38,12 @@ if __name__ == '__main__':
     env.read_env()
     token_bot = env('VERBBOT_TOKEN')
     project_id = env('PROJECT_ID')
-    session_id = env('SESSION_ID_TG')
     language_code = env('LANGUAGE_CODE')
     updater = Updater(token_bot)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command,
-                                          partial(get_dialogflow, pid=project_id, sid=session_id, lcode=language_code)))
+                                          partial(get_dialogflow, pid=project_id, lcode=language_code)))
 
     telegram_logs = env.str('TELEGRAM_LOGS_TOKEN')
     chat_id = env.int('TELEGRAM_CHAT_ID')
