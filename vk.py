@@ -12,10 +12,11 @@ from alerts import TelegramLogsHandler, handle_error
 logger = logging.getLogger(__name__)
 
 def get_dialogflow(event, vk_api, pid, sid, lcode):
-    with suppress(ApiError):
-        vk_api.messages.send(user_id=event.user_id,
-        message=gd.detect_intent_texts(pid, sid, event.text, lcode),
-                             random_id=random.randint(10, 100))
+    is_fallback, fulfillment_text = gd.detect_intent_texts(pid, sid, event.text, lcode)
+    if not is_fallback:
+        with suppress(ApiError):
+            vk_api.messages.send(user_id=event.user_id,
+            message=fulfillment_text, random_id=random.randint(10, 100))
 
 
 

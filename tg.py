@@ -24,8 +24,8 @@ def start(update: Update, context: CallbackContext) -> None:
 
 def get_dialogflow(update: Update, context: CallbackContext, pid, lcode) -> None:
     try:
-        with suppress(telegram.error.BadRequest):
-            update.message.reply_text(gd.detect_intent_texts(pid, f'tg{update.message.from_user.id}', update.message.text, lcode))
+        _, fulfillment_text = gd.detect_intent_texts(pid, f'tg{update.message.from_user.id}', update.message.text, lcode)
+        update.message.reply_text(fulfillment_text)
     except Exception as e:
         handle_error(e)
 
